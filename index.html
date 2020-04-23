@@ -1,0 +1,259 @@
+﻿<html ng-app="myApp">
+
+<head>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase.js"></script>
+    <script type="text/javascript" src="MathJax-2.6-latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <script src="angular.min.js"></script>
+    <script src="angular-route.min.js"></script>
+    <script src="angular-sanitize.min.js"></script>
+    <script src="angular-animate.min.js"></script>
+    <script src="angular-aria.min.js"></script>
+    <script src="angular-messages.min.js"></script>
+    <script src="angular-material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" href="angular-material.min.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <script src="myApp.js"></script>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <style>
+        .selectedIndex {
+            background: blue;
+            color: ivory
+        }
+        
+        .selectedChapterIndex {
+            background: blue;
+            color: ivory
+        }
+    </style>
+
+
+</head>
+
+<body layout="column" ng-controller="MyController">
+    <script type="text/ng-template" id="subject_list.html">
+
+
+        <md-list flex ng-controller="chapterListController">
+
+            <md-list-item class="md-1-line" ng-repeat="item1 in chapterList" ng-click="displayChapter($index,item1)" ng-class="{selectedChhapterIndex: selectedChapterIndex===$index}">
+                {{item1}}
+            </md-list-item>
+        </md-list>
+
+    </script>
+
+    <script type="text/ng-template" id="show_orders.html">
+        <h2>success</h2>
+        <p ng-controller="myCtrl" ng-bind-html="myText" id="chapterContent"></p>
+
+    </script>
+
+
+
+    <md-toolbar class="md-hue-2">
+        <div class="md-toolbar-tools">
+
+            <md-button class="md-icon-button" aria-label="More" ng-click="openLeftMenu()">
+                <md-icon md-svg-icon="menu-white-18dp.svg"></md-icon>
+            </md-button>
+            <h2 flex md-truncate>Rehash Handbook</h2>
+            <md-button class="md-primary md-raised" ng-click="openRightMenu()">
+                Chapters
+            </md-button>
+        </div>
+    </md-toolbar>
+
+
+
+    <div layout="row" flex>
+        <md-sidenav md-component-id="left" class="md-sidenav-left">
+            <md-toolbar class="md-theme-indigo" id="mytoolbar" layout="row">
+                <h1 class="md-toolbar-tools">Rehash Handbook</h1>
+                <md-button class="md-primary md-raised" ng-click="openLeftMenu()">
+                    close
+                </md-button>
+
+
+            </md-toolbar>
+            <div ng-controller="branchSelectController" class="md-padding" ng-cloak>
+                <h1 class="md-title">Select Branch</h1>
+                <div layout="row">
+                    <md-input-container>
+                        <label>Branches</label>
+                        <md-select ng-model="selectedItem" md-selected-text="getSelectedText()" ng-change="selectChanged(selectedItem)">
+                            <md-optgroup label="Branches">
+                                <md-option ng-repeat="item in items" ng-value="item" select="item">{{item}}</md-option>
+                            </md-optgroup>
+                        </md-select>
+                    </md-input-container>
+
+                </div>
+            </div>
+            <md-list flex ng-controller="subjectListController">
+
+                <md-list-item class="md-1-line" ng-repeat="item in list" ng-click="displayItem($index,item)" ng-class="{selectedIndex: selectedIndex===$index}">
+                    {{item}}
+                </md-list-item>
+            </md-list>
+
+        </md-sidenav>
+
+
+        <md-content layout="column" id="content" flex class="md-padding">
+            <div id="html2">
+
+
+                <div id="html1" ng-view></div>
+
+
+
+
+
+
+
+            </div>
+        </md-content>
+
+        <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right">
+
+            <md-toolbar class="md-theme-indigo" id="mytoolbar">
+                <h1 class="md-toolbar-tools">Table of Contents</h1>
+
+
+            </md-toolbar>
+            <md-list flex ng-controller="chapterListController">
+
+                <md-list-item class="md-1-line" ng-repeat="item1 in chapterList" ng-click="displayChapter($index,item1)" ng-class="{selectedChhapterIndex: selectedChapterIndex===$index}">
+                    {{item1}}
+                </md-list-item>
+            </md-list>
+
+        </md-sidenav>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        (function() {
+
+
+
+
+
+            var bigTextEvaluationStudents = document.getElementById('bigTextEvaluationStudents');
+
+            var dbBigTextEvaluationStudentsRef = firebase.database().ref().child('app').child('chapterlist').child('-LvRPSyPXVRttNi5_vf4').child('html');
+            var a;
+
+            dbBigTextEvaluationStudentsRef.on('value', snap => {
+                a = snap.val();
+
+
+                var innerhtmlp = a;
+                var pos = a.lastIndexOf("\u0022");
+
+
+                a = a.replace("\u0022", "");
+                bigTextEvaluationStudents.innerHTML = a;
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, bigTextEvaluationStudents]);
+
+
+                var images5 = document.getElementById('bigTextEvaluationStudents')
+                    .getElementsByTagName('img');
+                for (var j = 0; j < images5.length; j++) {
+                    var image6 = images5[j];
+                    image6.id = image6.src.substring(34);
+                }
+
+                // Get a reference to the storage service, which is used to create references in your storage bucket
+
+                var storage = firebase.storage();
+
+                // Create a storage reference from our storage service
+                var storageRef = storage.ref();
+
+
+
+                // Now we get the references of these images
+                storageRef.child('Mechanics of Solids/').listAll().then(function(result) {
+                    result.items.forEach(function(imageRef) {
+
+                        imageRef.getDownloadURL().then(function(url) {
+                            // TODO: Display the image on the UI
+
+                            var image10 = document.getElementById(imageRef.name);
+                            image10.src = url;
+                            // This can be downloaded directly:
+                            var xhr = new XMLHttpRequest();
+                            xhr.responseType = 'blob';
+                            xhr.onload = function(event) {
+                                var blob = xhr.response;
+                            };
+                            xhr.open('GET', url);
+                            xhr.send();
+                        }).catch(function(error) {
+                            // Handle any errors
+                        });
+                    });
+
+
+                }).catch(function(error) {
+                    // Handle any errors
+                });
+
+
+
+
+
+
+
+
+
+
+
+
+            });
+
+
+
+
+
+
+
+
+        }());
+    </script>
+
+
+</body>
+
+</html>
