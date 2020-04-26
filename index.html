@@ -33,6 +33,13 @@
             background: blue;
             color: ivory
         }
+        
+        .panel.ng-hide-add,
+        .panel.ng-show-add,
+        .panel.ng-show-remove,
+        .panel.ng-hide-remove {
+            transition: all linear 0.1s;
+        }
     </style>
 
 
@@ -66,9 +73,13 @@
                 <md-icon md-svg-icon="menu-white-18dp.svg"></md-icon>
             </md-button>
             <h2 flex md-truncate>Rehash Handbook</h2>
-            <md-button class="md-primary md-raised" ng-click="openRightMenu()">
-                Chapters
+            <md-button class="md-icon-button" aria-label="Search" ng-click="showPrompt($event)">
+                <md-icon md-svg-icon="search-24px.svg"></md-icon>
             </md-button>
+            <md-button class="md-icon-button" aria-label="Table of Content" ng-click="openRightMenu()">
+                <md-icon md-svg-icon="list-white-24dp.svg"></md-icon>
+            </md-button>
+
         </div>
     </md-toolbar>
 
@@ -108,6 +119,8 @@
         </md-sidenav>
 
 
+
+
         <md-content layout="column" id="content" flex class="md-padding">
             <div id="html2">
 
@@ -120,6 +133,31 @@
 
 
 
+            </div>
+        </md-content>
+        <md-content layout="column" id="content1" flex class="searchPanel" ng-show="isVisible" md-colors="{color: 'default-red-A100', 'background': 'default-primary-600'}">
+            <div>
+
+                <md-input-container>
+                    <label>Email</label>
+                    <input>
+                </md-input-container>
+
+                <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch ng-repeat="cardlist1 in cardList">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">{{cardlist1}}</span>
+                            <span class="md-subhead">Large</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <div class="md-media-lg card-media"></div>
+                        </md-card-title-media>
+                    </md-card-title>
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button>Action 1</md-button>
+                        <md-button>Action 2</md-button>
+                    </md-card-actions>
+                </md-card>
             </div>
         </md-content>
 

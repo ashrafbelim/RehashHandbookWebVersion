@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-var app = angular.module("myApp", ['ngMaterial', 'ngSanitize', 'ngRoute']);
+var app = angular.module("myApp", ['ngMaterial', 'ngSanitize', 'ngRoute', 'ngAnimate']);
 
 // Creating New Service
 app.config(function($routeProvider, $locationProvider) { //inject $locationProvider service
@@ -53,15 +53,37 @@ app.controller('AboutController', function($scope) {
 
 app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleService, $location) {
         $location.path('/technologies');
+        $scope.status = ' ashraf ';
+        $scope.cardList = ['ashraf', 'firdous'];
 
         $scope.openLeftMenu = function() {
             $mdSidenav('left').toggle();
 
         };
+        $scope.isVisible = true;
 
         $scope.openRightMenu = function() {
             $mdSidenav('right').toggle();
         };
+
+
+
+        $scope.showPrompt = function(ev) {
+
+
+            if ($scope.isVisible == false) {
+                $scope.isVisible = true;
+            } else {
+                $scope.isVisible = false;
+            }
+
+            // Appending dialog to document.body to cover sidenav in docs app
+
+
+
+        };
+
+
 
 
     })
