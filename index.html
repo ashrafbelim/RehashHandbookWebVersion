@@ -45,8 +45,8 @@
 
 </head>
 
-<body layout="column" ng-controller="MyController">
-    <script type="text/ng-template" id="subject_list.html">
+<body layout="column" ng-controller="bodyCtrl">
+    <script type="text/ng-template" id="chapter_list.html">
 
 
         <md-list flex ng-controller="chapterListController">
@@ -58,9 +58,28 @@
 
     </script>
 
-    <script type="text/ng-template" id="show_orders.html">
+    <script type="text/ng-template" id="show_chapter.html">
         Success
-        <p ng-controller="myCtrl" ng-bind-html="myText" id="chapterContent"></p>
+        <p ng-controller="chapterCtrl" ng-bind-html="chapterHtml" id="chapterContent"></p>
+
+    </script>
+
+    <script type="text/ng-template" id="show_search_results.html">
+        {{searchString}}
+
+        <md-card ng-repeat="searchResultItem in searchResultList" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{searchResultItem.cname}}</span>
+                    <span class="md-subhead">{{searchResultItem.sname}}</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-click="displayChapter($index,searchResultItem.cname)">Open</md-button>
+
+            </md-card-actions>
+        </md-card>
+
 
     </script>
 
@@ -102,7 +121,7 @@
                         <label>Branches</label>
                         <md-select ng-model="selectedItem" md-selected-text="getSelectedText()" ng-change="selectChanged(selectedItem)">
                             <md-optgroup label="Branches">
-                                <md-option ng-repeat="item in items" ng-value="item" select="item">{{item}}</md-option>
+                                <md-option ng-repeat="item in branchList" ng-value="item" select="item">{{item}}</md-option>
                             </md-optgroup>
                         </md-select>
                     </md-input-container>
@@ -111,7 +130,7 @@
             </div>
             <md-list flex ng-controller="subjectListController">
 
-                <md-list-item class="md-1-line" ng-repeat="item in list" ng-click="displayItem($index,item)" ng-class="{selectedIndex: selectedIndex===$index}">
+                <md-list-item class="md-1-line" ng-repeat="item in subjectList" ng-click="displayChapterList($index,item)" ng-class="{selectedIndex: selectedIndex===$index}">
                     {{item}}
                 </md-list-item>
             </md-list>
@@ -135,31 +154,7 @@
 
             </div>
         </md-content>
-        <md-content layout="column" id="content1" flex class="searchPanel" ng-show="isVisible" md-colors="{color: 'default-red-A100', 'background': 'default-primary-600'}">
-            <div>
 
-                <md-input-container>
-                    <label>Email</label>
-                    <input>
-                </md-input-container>
-
-                <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch ng-repeat="cardlist1 in cardList">
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-headline">{{cardlist1}}</span>
-                            <span class="md-subhead">Large</span>
-                        </md-card-title-text>
-                        <md-card-title-media>
-                            <div class="md-media-lg card-media"></div>
-                        </md-card-title-media>
-                    </md-card-title>
-                    <md-card-actions layout="row" layout-align="end center">
-                        <md-button>Action 1</md-button>
-                        <md-button>Action 2</md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
-        </md-content>
 
         <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right">
 

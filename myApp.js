@@ -19,15 +19,19 @@ var app = angular.module("myApp", ['ngMaterial', 'ngSanitize', 'ngRoute', 'ngAni
 app.config(function($routeProvider, $locationProvider) { //inject $locationProvider service
     $locationProvider.hashPrefix(''); // add configuration
     $routeProvider
-        .when("/home", {
-            templateUrl: "subject_list.html",
+        .when("/chapterlist", {
+            templateUrl: "chapter_list.html",
             controller: "chapterListController"
         })
         .when("/chapter/:chapterName", {
-            templateUrl: "show_orders.html",
-            controller: "myCtrl"
+            templateUrl: "show_chapter.html",
+            controller: "chapterCtrl"
         })
-        .when("/technologies", {
+        .when("/searchresult/:searchstring", {
+            templateUrl: "show_search_results.html",
+            controller: "searchPanelCtrl"
+        })
+        .when("/home", {
             template: "<h2>Welcome in Rehash Handbook</h2>"
         });
 })
@@ -36,23 +40,14 @@ app.service("sampleService", function() {
     this.branchName = ''
     this.subjectName = ''
     this.chapterName = ''
-});
-
-app.controller('HomeController', function($scope) {
-    $scope.message = 'Hello from HomeController';
-});
-
-app.controller('BlogController', function($scope) {
-    $scope.message = 'Hello from BlogController';
-});
-
-app.controller('AboutController', function($scope) {
-    $scope.message = 'Hello from AboutController';
+    this.searchString = ''
 });
 
 
-app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleService, $location) {
-        $location.path('/technologies');
+
+
+app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService, $location, $routeParams, sampleService) {
+        $location.path('/home');
         $scope.status = ' ashraf ';
         $scope.cardList = ['ashraf', 'firdous'];
 
@@ -60,7 +55,7 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
             $mdSidenav('left').toggle();
 
         };
-        $scope.isVisible = true;
+        $scope.isSearchPanelVisible = true;
 
         $scope.openRightMenu = function() {
             $mdSidenav('right').toggle();
@@ -69,12 +64,40 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
 
 
         $scope.showPrompt = function(ev) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            var confirm = $mdDialog.prompt()
+                .title('Search')
+                .textContent('Search inside Handbook')
+                .placeholder('')
+                .ariaLabel('')
+                .initialValue('')
+                .targetEvent(ev)
+                .required(true)
+                .ok('Search')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                $scope.status = 'You decided to name your dog ' + result + '.';
+                sampleService.searchString = result;
+
+                $location.path('/searchresult/' + result);
 
 
-            if ($scope.isVisible == false) {
-                $scope.isVisible = true;
+            }, function() {
+                $scope.status = 'You didn\'t name your dog.';
+            });
+        };
+
+
+
+
+        $scope.showSearchPanel = function(ev) {
+
+
+            if ($scope.isSearchPanelVisible == false) {
+                $scope.isSearchPanelVisible = true;
             } else {
-                $scope.isVisible = false;
+                $scope.isSearchPanelVisible = false;
             }
 
             // Appending dialog to document.body to cover sidenav in docs app
@@ -90,7 +113,7 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
     .controller('subjectListController', function($scope, sampleService, $location) {
         $scope.selectedIndex = null;
 
-        $scope.list = [];
+        $scope.subjectList = [];
 
 
 
@@ -101,15 +124,15 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
 
         subjectListRef.on('child_added', function(data) {
             $scope.$apply(function() {
-                $scope.list.push(data.child("sname").val());
+                $scope.subjectList.push(data.child("sname").val());
             });
         });
 
-        $scope.displayItem = function(index, item) {
+        $scope.displayChapterList = function(index, item) {
 
 
             sampleService.subjectName = item;
-            $location.path('/home');
+            $location.path('/chapterlist');
 
 
             if ($scope.selectedIndex === null) {
@@ -127,13 +150,13 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
             if (newVal) {
                 scope.branchName = newVal;
 
-                scope.list.length = 0;
+                scope.subjectList.length = 0;
 
                 var subjectListRef1 = firebase.database().ref().child('app').child('subjectlist');
                 subjectListRef1.orderByChild("branch").equalTo(newVal).on("child_added", function(snapshot) {
                     console.log(snapshot.child('sname').val());
 
-                    $scope.list.push(snapshot.child("sname").val());
+                    $scope.subjectList.push(snapshot.child("sname").val());
 
                 });
 
@@ -143,13 +166,13 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
     })
     .controller('branchSelectController', function($scope, sampleService) {
 
-        var commentsRef = firebase.database().ref().child('app').child('branchlist');
+        var branchListRef = firebase.database().ref().child('app').child('branchlist');
 
-        $scope.items = [];
+        $scope.branchList = [];
 
-        commentsRef.on('child_added', function(data) {
+        branchListRef.on('child_added', function(data) {
             $scope.$apply(function() {
-                $scope.items.push(data.val());
+                $scope.branchList.push(data.val());
             });
         });
 
@@ -171,13 +194,13 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
         };
     })
     .controller('AppCtrl', function($scope) {})
-    .controller("myCtrl", function($scope, sampleService, $location, $routeParams, $sce) {
+    .controller("chapterCtrl", function($scope, sampleService, $location, $routeParams, $sce) {
 
         $scope.chapterListNew = [];
         $scope.sampleService = sampleService;
         $scope.chapterName = sampleService.chapterName;
         $scope.subjectName = sampleService.subjectName;
-        $scope.myText = "<h2>demo</h2>";
+        $scope.chapterHtml = "<h2>demo</h2>";
 
 
         $scope.$watch('sampleService.chapterName', function(newVal, oldVal, scope, ) {
@@ -199,15 +222,7 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
 
 
                     });
-                    $scope.myText = $sce.trustAsHtml($div.html());
-
-
-
-
-
-
-
-
+                    $scope.chapterHtml = $sce.trustAsHtml($div.html());
 
 
                     // Get a reference to the storage service, which is used to create references in your storage bucket
@@ -216,8 +231,6 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
 
                     // Create a storage reference from our storage service
                     var storageRef = storage.ref();
-
-
 
                     // Now we get the references of these images
                     storageRef.child($scope.subjectName + '/').listAll().then(function(result) {
@@ -231,7 +244,7 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
                                     $div.find('img[id="' + imageRef.name + '"]').attr('src', url);
 
 
-                                    $scope.myText = $sce.trustAsHtml($div.html());
+                                    $scope.chapterHtml = $sce.trustAsHtml($div.html());
                                     var html = document.getElementById("chapterContent");
                                     MathJax.Hub.Queue(["Typeset", MathJax.Hub, html]);
 
@@ -304,6 +317,56 @@ app.controller('MyController', function($scope, $mdSidenav, $mdDialog, sampleSer
             } else {
                 $scope.selectedChapterIndex = index;
             }
+        }
+
+    })
+    .controller('searchPanelCtrl', function($scope, $routeParams, sampleService, $location) {
+
+
+
+        $scope.sampleService = sampleService;
+        $scope.searchString = sampleService.searchString;
+
+        $scope.searchResultList = [];
+        $scope.$watch('sampleService.searchString', function(newVal, oldVal, scope) {
+            if (newVal) {
+
+
+
+                scope.searchResultList.length = 0;
+                var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
+                subjectListRef2.on('child_added', function(data) {
+
+                    if (data.child("html").val().includes(newVal)) {
+                        $scope.$apply(function() {
+                            var singleObj = {};
+                            singleObj['sname'] = data.child("sname").val();
+                            singleObj['cname'] = data.child("cname").val();
+                            singleObj['html'] = data.child("html").val();
+
+
+                            scope.searchResultList.push(singleObj);
+
+                        });
+
+
+                    }
+
+
+
+                });
+
+            }
+
+
+        });
+
+        $scope.displayChapter = function(index, cname) {
+            sampleService.chapterName = cname;
+            $location.path("/chapter/" + cname);
+
+
+
         }
 
     });
