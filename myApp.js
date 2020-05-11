@@ -317,17 +317,14 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
         var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
         subjectListRef2.on('child_added', function(data) {
 
+            alert(data.child("sname").val());
+            var singleObj = {};
+            singleObj['sname'] = data.child("sname").val();
+            singleObj['cname'] = data.child("cname").val();
+            singleObj['html'] = data.child("html").val();
 
-            $scope.$apply(function() {
-                var singleObj = {};
-                singleObj['sname'] = data.child("sname").val();
-                singleObj['cname'] = data.child("cname").val();
-                singleObj['html'] = data.child("html").val();
 
-
-                $scope.searchResultList.push(singleObj);
-
-            });
+            $scope.searchResultList.push(singleObj);
 
 
 
@@ -338,10 +335,13 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
 
         $scope.$watch('searchString', function(newVal, oldVal, scope) {
 
+
             $scope.searchResultListNew.length = 0;
             for (var i = 0; i < $scope.searchResultList.length; i++) {
                 if ($scope.searchResultList[i].html.includes(newVal)) {
                     $scope.searchResultListNew.push($scope.searchResultList[i]);
+
+
                 }
             }
 
