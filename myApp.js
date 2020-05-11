@@ -27,8 +27,8 @@ app.config(function($routeProvider, $locationProvider) { //inject $locationProvi
             templateUrl: "show_chapter.html",
             controller: "chapterCtrl"
         })
-        .when("/searchresult/:searchstring", {
-            templateUrl: "show_search_results.html",
+        .when("/searchpanel", {
+            templateUrl: "search_panel.html",
             controller: "searchPanelCtrl"
         })
         .when("/home", {
@@ -65,27 +65,8 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
 
         $scope.showPrompt = function(ev) {
             // Appending dialog to document.body to cover sidenav in docs app
-            var confirm = $mdDialog.prompt()
-                .title('Search')
-                .textContent('Search inside Handbook')
-                .placeholder('')
-                .ariaLabel('')
-                .initialValue('')
-                .targetEvent(ev)
-                .required(true)
-                .ok('Search')
-                .cancel('Cancel');
+            $location.path('/searchpanel');
 
-            $mdDialog.show(confirm).then(function(result) {
-                $scope.status = 'You decided to name your dog ' + result + '.';
-                sampleService.searchString = result;
-
-                $location.path('/searchresult/' + result);
-
-
-            }, function() {
-                $scope.status = 'You didn\'t name your dog.';
-            });
         };
 
 
@@ -295,7 +276,12 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
                 var subjectListRef1 = firebase.database().ref().child('app').child('chapterlist');
                 subjectListRef1.orderByChild("sname").equalTo(newVal).on("child_added", function(snapshot) {
 
-                    $scope.chapterList.push(snapshot.child("cname").val());
+                    var singleObj = {};
+                    singleObj['sname'] = snapshot.child("sname").val();
+                    singleObj['cname'] = snapshot.child("cname").val();
+                    singleObj['key'] = snapshot.key;
+
+                    $scope.chapterList.push(singleObj);
 
                 });
 
@@ -306,8 +292,8 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
         $scope.displayChapter = function(index, item1) {
 
 
-            sampleService.chapterName = item1;
-            $location.path("/chapter/" + item1);
+            sampleService.chapterName = item1.cname;
+            $location.path("/chapter/" + item1.cname);
 
 
             if ($scope.selectedChapterIndex === null) {
@@ -320,48 +306,60 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
         }
 
     })
-    .controller('searchPanelCtrl', function($scope, $routeParams, sampleService, $location) {
+    .controller('searchPanelCtrl', function($scope, sampleService, $location) {
 
 
 
-        $scope.sampleService = sampleService;
-        $scope.searchString = sampleService.searchString;
+
+        $scope.searchString = "";
 
         $scope.searchResultList = [];
-        $scope.$watch('sampleService.searchString', function(newVal, oldVal, scope) {
-            if (newVal) {
+        var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
+        subjectListRef2.on('child_added', function(data) {
+
+
+            $scope.$apply(function() {
+                var singleObj = {};
+                singleObj['sname'] = data.child("sname").val();
+                singleObj['cname'] = data.child("cname").val();
+                singleObj['html'] = data.child("html").val();
+
+
+                $scope.searchResultList.push(singleObj);
+
+            });
 
 
 
-                scope.searchResultList.length = 0;
-                var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
-                subjectListRef2.on('child_added', function(data) {
-
-                    if (data.child("html").val().includes(newVal)) {
-                        $scope.$apply(function() {
-                            var singleObj = {};
-                            singleObj['sname'] = data.child("sname").val();
-                            singleObj['cname'] = data.child("cname").val();
-                            singleObj['html'] = data.child("html").val();
-
-
-                            scope.searchResultList.push(singleObj);
-
-                        });
-
-
-                    }
+        });
+        $scope.searchResultListNew = [];
 
 
 
-                });
+        $scope.$watch('searchString', function(newVal, oldVal, scope) {
 
+            $scope.searchResultListNew.length = 0;
+            for (var i = 0; i < $scope.searchResultList.length; i++) {
+                if ($scope.searchResultList[i].html.includes(newVal)) {
+                    $scope.searchResultListNew.push($scope.searchResultList[i]);
+                }
             }
+
+
+
+
+
+
+
+
+
+
 
 
         });
 
-        $scope.displayChapter = function(index, cname) {
+        $scope.displayChapter = function(index, sname, cname) {
+            sampleService.subjectName = sname;
             sampleService.chapterName = cname;
             $location.path("/chapter/" + cname);
 

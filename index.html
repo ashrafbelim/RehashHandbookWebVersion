@@ -52,7 +52,7 @@
         <md-list flex ng-controller="chapterListController">
 
             <md-list-item class="md-1-line" ng-repeat="item1 in chapterList" ng-click="displayChapter($index,item1)" ng-class="{selectedChhapterIndex: selectedChapterIndex===$index}">
-                {{item1}}
+                {{item1.cname}}
             </md-list-item>
         </md-list>
 
@@ -64,21 +64,27 @@
 
     </script>
 
-    <script type="text/ng-template" id="show_search_results.html">
-        {{searchString}}
+    <script type="text/ng-template" id="search_panel.html">
+        <div layout="column">
 
-        <md-card ng-repeat="searchResultItem in searchResultList" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">{{searchResultItem.cname}}</span>
-                    <span class="md-subhead">{{searchResultItem.sname}}</span>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button ng-click="displayChapter($index,searchResultItem.cname)">Open</md-button>
+            <md-input-container>
+                <label>Search</label>
+                <input ng-model="searchString">
+            </md-input-container>
 
-            </md-card-actions>
-        </md-card>
+            <md-card ng-repeat="searchResultItem in searchResultListNew" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">{{searchResultItem.cname}}</span>
+                        <span class="md-subhead">{{searchResultItem.sname}}</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button ng-click="displayChapter($index,searchResultItem.sname,searchResultItem.cname)">Open</md-button>
+
+                </md-card-actions>
+            </md-card>
+        </div>
 
 
     </script>
@@ -96,7 +102,7 @@
                 <md-icon md-svg-icon="search-24px.svg"></md-icon>
             </md-button>
             <md-button class="md-icon-button" aria-label="Table of Content" ng-click="openRightMenu()">
-                <md-icon md-svg-icon="list-white-24dp.svg"></md-icon>
+                <md-icon md-svg-icon="assignment-white-24dp.svg"></md-icon>
             </md-button>
 
         </div>
@@ -141,6 +147,7 @@
 
 
         <md-content layout="column" id="content" flex class="md-padding">
+
             <div id="html2">
 
 
