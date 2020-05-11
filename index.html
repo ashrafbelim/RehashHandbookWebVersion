@@ -52,7 +52,7 @@
         <md-list flex ng-controller="chapterListController">
 
             <md-list-item class="md-1-line" ng-repeat="item1 in chapterList" ng-click="displayChapter($index,item1)" ng-class="{selectedChhapterIndex: selectedChapterIndex===$index}">
-                {{item1.cname}}
+                {{item1}}
             </md-list-item>
         </md-list>
 

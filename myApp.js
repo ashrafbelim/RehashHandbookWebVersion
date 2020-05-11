@@ -276,12 +276,8 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
                 var subjectListRef1 = firebase.database().ref().child('app').child('chapterlist');
                 subjectListRef1.orderByChild("sname").equalTo(newVal).on("child_added", function(snapshot) {
 
-                    var singleObj = {};
-                    singleObj['sname'] = snapshot.child("sname").val();
-                    singleObj['cname'] = snapshot.child("cname").val();
-                    singleObj['key'] = snapshot.key;
 
-                    $scope.chapterList.push(singleObj);
+                    $scope.chapterList.push(snapshot.child("cname").val());
 
                 });
 
@@ -292,8 +288,8 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
         $scope.displayChapter = function(index, item1) {
 
 
-            sampleService.chapterName = item1.cname;
-            $location.path("/chapter/" + item1.cname);
+            sampleService.chapterName = item1;
+            $location.path("/chapter/" + item1);
 
 
             if ($scope.selectedChapterIndex === null) {
