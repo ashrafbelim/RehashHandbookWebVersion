@@ -317,7 +317,7 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
         var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
         subjectListRef2.on('child_added', function(data) {
 
-            alert(data.child("sname").val());
+
             var singleObj = {};
             singleObj['sname'] = data.child("sname").val();
             singleObj['cname'] = data.child("cname").val();
