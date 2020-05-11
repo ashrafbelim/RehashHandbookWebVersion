@@ -311,7 +311,7 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
 
 
 
-        $scope.searchString = "";
+        $scope.searchString = null;
 
         $scope.searchResultList = [];
         var subjectListRef2 = firebase.database().ref().child('app').child('chapterlist');
@@ -338,7 +338,7 @@ app.controller('bodyCtrl', function($scope, $mdSidenav, $mdDialog, sampleService
 
             $scope.searchResultListNew.length = 0;
             for (var i = 0; i < $scope.searchResultList.length; i++) {
-                if ($scope.searchResultList[i].html.includes(newVal)) {
+                if ($scope.searchResultList[i].html.includes(newVal) && newVal != "") {
                     $scope.searchResultListNew.push($scope.searchResultList[i]);
 
 
